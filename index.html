@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>TweakCore</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#070b12;
+    --panel:#0d1420;
+    --panel2:#111b29;
+    --border:rgba(255,255,255,.08);
+    --text:#f5f7fb;
+    --muted:#7f8ba1;
+    --cyan:#16d9ff;
+    --blue:#287cff;
+    --green:#32e58a;
+    --red:#ff5264;
+}
+
+body{
+    background:
+        radial-gradient(circle at 80% 0%,rgba(22,217,255,.12),transparent 30%),
+        radial-gradient(circle at 0% 100%,rgba(40,124,255,.10),transparent 30%),
+        var(--bg);
+    color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    min-height:100vh;
+}
+
+button{
+    font:inherit;
+}
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:245px;
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    padding:22px 15px;
+    background:rgba(8,13,22,.94);
+    border-right:1px solid var(--border);
+    z-index:10;
+    backdrop-filter:blur(20px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:5px 10px 28px;
+}
+
+.logoIcon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,var(--cyan),var(--blue));
+    color:#001017;
+    font-size:21px;
+    font-weight:900;
+}
+
+.logoText{
+    font-size:19px;
+    font-weight:800;
+}
+
+.logoText span{
+    color:var(--cyan);
+}
+
+.navTitle{
+    color:#536078;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    margin:15px 12px 7px;
+    text-transform:uppercase;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.nav button{
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    padding:12px;
+    border-radius:11px;
+    text-align:left;
+    cursor:pointer;
+    display:flex;
+    gap:11px;
+    align-items:center;
+}
+
+.nav button:hover{
+    background:rgba(255,255,255,.04);
+    color:white;
+}
+
+.nav button.active{
+    background:rgba(22,217,255,.10);
+    color:white;
+    box-shadow:inset 2px 0 var(--cyan);
+}
+
+.status{
+    position:absolute;
+    bottom:18px;
+    left:15px;
+    right:15px;
+    padding:13px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:rgba(255,255,255,.025);
+    font-size:11px;
+    color:var(--muted);
+}
+
+.statusDot{
+    width:8px;
+    height:8px;
+    background:var(--red);
+    border-radius:50%;
+    display:inline-block;
+    margin-right:7px;
+}
+
+.statusDot.online{
+    background:var(--green);
+    box-shadow:0 0 10px var(--green);
+}
+
+/* MAIN */
+
+.main{
+    margin-left:245px;
+    width:calc(100% - 245px);
+    padding:25px;
+}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
+
+.title h1{
+    font-size:27px;
+}
+
+.title p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:4px;
+}
+
+.system{
+    padding:10px 15px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:11px;
+    font-size:12px;
+}
+
+/* PAGE */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* HERO */
+
+.hero{
+    padding:25px;
+    border-radius:20px;
+    border:1px solid rgba(22,217,255,.13);
+    background:
+        linear-gradient(135deg,rgba(22,217,255,.08),rgba(40,124,255,.03)),
+        var(--panel);
+    margin-bottom:16px;
+}
+
+.heroContent{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.hero h2{
+    font-size:23px;
+}
+
+.hero p{
+    color:var(--muted);
+    max-width:650px;
+    font-size:13px;
+    margin-top:7px;
+    line-height:1.6;
+}
+
+.fps{
+    text-align:right;
+}
+
+.fps strong{
+    color:var(--cyan);
+    font-size:42px;
+    display:block;
+}
+
+.fps span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    margin-top:14px;
+}
+
+.card{
+    background:rgba(13,20,32,.88);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:18px;
+}
+
+.cardHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.cardHeader h3{
+    font-size:14px;
+}
+
+.cardHeader span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+.value{
+    font-size:27px;
+    font-weight:800;
+}
+
+.value small{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:500;
+}
+
+.progress{
+    height:5px;
+    background:#192231;
+    border-radius:10px;
+    margin-top:12px;
+    overflow:hidden;
+}
+
+.progress i{
+    height:100%;
+    display:block;
+    width:0%;
+    background:linear-gradient(90deg,var(--cyan),var(--blue));
+    border-radius:10px;
+}
+
+/* PROFILE */
+
+.profiles{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.profile{
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:#0b1320;
+    cursor:pointer;
+}
+
+.profile:hover{
+    border-color:rgba(22,217,255,.4);
+}
+
+.profile h3{
+    font-size:14px;
+    margin-top:8px;
+}
+
+.profile p{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:6px;
+    line-height:1.5;
+}
+
+/* BUTTON */
+
+.btn{
+    border:1px solid var(--border);
+    background:#151f30;
+    color:white;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#1b293e;
+}
+
+.btn.primary{
+    border:0;
+    background:linear-gradient(135deg,var(--cyan),var(--blue));
+    color:#001017;
+    font-weight:800;
+}
+
+.full{
+    width:100%;
+}
+
+/* ROW */
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.row:last-child{
+    border-bottom:0;
+}
+
+.row strong{
+    display:block;
+    font-size:13px;
+}
+
+.row span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* CHART */
+
+.chart{
+    height:150px;
+    display:flex;
+    align-items:flex-end;
+    gap:3px;
+}
+
+.bar{
+    flex:1;
+    background:linear-gradient(to top,var(--blue),var(--cyan));
+    border-radius:3px 3px 0 0;
+    min-height:3px;
+}
+
+/* LOG */
+
+.log{
+    max-height:220px;
+    overflow:auto;
+    font-family:monospace;
+    font-size:11px;
+}
+
+.log div{
+    padding:7px 0;
+    border-bottom:1px solid rgba(255,255,255,.04);
+    color:#aab4c5;
+}
+
+.log b{
+    color:var(--cyan);
+}
+
+/* SELECT */
+
+select{
+    width:100%;
+    background:#111a28;
+    color:white;
+    border:1px solid var(--border);
+    padding:11px;
+    border-radius:9px;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#111b2a;
+    border:1px solid var(--border);
+    border-left:3px solid var(--cyan);
+    border-radius:11px;
+    padding:13px 16px;
+    font-size:12px;
+    opacity:0;
+    transform:translateY(30px);
+    transition:.25s;
+    z-index:100;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* MOBILE */
+
+.menu{
+    display:none;
+}
+
+@media(max-width:900px){
+
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+        padding:16px;
+    }
+
+    .menu{
+        display:block;
+        background:#111a28;
+        color:white;
+        border:1px solid var(--border);
+        border-radius:9px;
+        padding:8px 11px;
+        cursor:pointer;
+    }
+
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+
+    .grid,
+    .grid2,
+    .profiles{
+        grid-template-columns:1fr;
+    }
+
+    .heroContent{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .fps{
+        text-align:left;
+    }
+
+    .system{
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <div class="logoIcon">T</div>
+        <div class="logoText">
+            Tweak<span>Core</span>
+        </div>
+    </div>
+
+    <div class="navTitle">Dashboard</div>
+
+    <nav class="nav">
+
+        <button class="active" data-page="dashboard">
+            🏠 Dashboard
+        </button>
+
+        <button data-page="performance">
+            ⚡ Performance
+        </button>
+
+        <button data-page="gaming">
+            🎮 Gaming
+        </button>
+
+        <button data-page="network">
+            🌐 Network
+        </button>
+
+        <button data-page="benchmark">
+            📊 Benchmark
+        </button>
+
+    </nav>
+
+    <div class="navTitle">System</div>
+
+    <nav class="nav">
+
+        <button data-page="system">
+            💻 System
+        </button>
+
+        <button data-page="profiles">
+            ◆ Profiles
+        </button>
+
+        <button data-page="settings">
+            ⚙ Settings
+        </button>
+
+    </nav>
+
+    <div class="status">
+        <span class="statusDot" id="backendDot"></span>
+        <span id="backendStatus">
+            Android Backend offline
+        </span>
+    </div>
+
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+
+        <button class="menu" id="menu">
+            ☰
+        </button>
+
+        <div class="title">
+            <h1 id="pageTitle">Dashboard</h1>
+            <p id="pageSubtitle">
+                Dein System auf einen Blick.
+            </p>
+        </div>
+
+        <div class="system">
+            System:
+            <strong id="systemName">
+                Erkennung...
+            </strong>
+        </div>
+
+    </div>
+
+
+<!-- DASHBOARD -->
+
+<section class="page active" id="dashboard">
+
+    <div class="hero">
+
+        <div class="heroContent">
+
+            <div>
+
+                <h2>
+                    TweakCore Control Center
+                </h2>
+
+                <p>
+                    Professionelles Performance-
+                    Dashboard für Windows, Android,
+                    Linux und macOS.
+                </p>
+
+            </div>
+
+            <div class="fps">
+
+                <strong id="fps">
+                    --
+                </strong>
+
+                <span>
+                    LIVE FPS
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>CPU</h3>
+                <span>Android</span>
+            </div>
+
+            <div class="value">
+                <span id="cpuCores">--</span>
+                <small>Kerne</small>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>RAM</h3>
+                <span>Live</span>
+            </div>
+
+            <div class="value">
+                <span id="ram">--</span>
+                <small>%</small>
+            </div>
+
+            <div class="progress">
+                <i id="ramBar"></i>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Akku</h3>
+                <span>Live</span>
+            </div>
+
+            <div class="value">
+                <span id="battery">--</span>
+                <small>%</small>
+            </div>
+
+            <div class="progress">
+                <i id="batteryBar"></i>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Temperatur</h3>
+                <span>Battery</span>
+            </div>
+
+            <div class="value">
+                <span id="temperature">--</span>
+                <small>°C</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid2">
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>FPS Verlauf</h3>
+                <span>Live</span>
+            </div>
+
+            <div class="chart" id="chart"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Android System</h3>
+                <span>Backend</span>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>Gerät</strong>
+                    <span id="device">
+                        --
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>Android</strong>
+                    <span id="androidVersion">
+                        --
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>Display</strong>
+                    <span id="refreshRate">
+                        -- Hz
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>Thermal Status</strong>
+                    <span id="thermal">
+                        --
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PERFORMANCE -->
+
+<section class="page" id="performance">
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Performance Profile</h3>
+            <span>Safe</span>
+        </div>
+
+        <div class="profiles">
+
+            <div class="profile"
+                 onclick="setProfile('eco')">
+
+                🌱
+
+                <h3>
+                    Eco
+                </h3>
+
+                <p>
+                    Energie sparen und
+                    Temperatur reduzieren.
+                </p>
+
+            </div>
+
+
+            <div class="profile"
+                 onclick="setProfile('balanced')">
+
+                ⚖️
+
+                <h3>
+                    Balanced
+                </h3>
+
+                <p>
+                    Ausgewogene Leistung.
+                </p>
+
+            </div>
+
+
+            <div class="profile"
+                 onclick="setProfile('performance')">
+
+                ⚡
+
+                <h3>
+                    Performance
+                </h3>
+
+                <p>
+                    Verfügbare Leistung
+                    priorisieren.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Aktuelles Profil</h3>
+            <span id="profileStatus">
+                NORMAL
+            </span>
+        </div>
+
+        <button
+            class="btn primary"
+            onclick="refreshAndroidData()">
+
+            Systemdaten aktualisieren
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- GAMING -->
+
+<section class="page" id="gaming">
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Gaming Center</h3>
+            <span>Safe Mode</span>
+        </div>
+
+        <div class="profiles">
+
+            <div class="profile"
+                 onclick="gamingMode('competitive')">
+
+                🎯
+
+                <h3>
+                    Competitive
+                </h3>
+
+                <p>
+                    Fokus auf stabile
+                    Performance und Latenz.
+                </p>
+
+            </div>
+
+
+            <div class="profile"
+                 onclick="gamingMode('performance')">
+
+                🚀
+
+                <h3>
+                    Performance
+                </h3>
+
+                <p>
+                    Performance-Profil
+                    auswählen.
+                </p>
+
+            </div>
+
+
+            <div class="profile"
+                 onclick="gamingMode('balanced')">
+
+                ⚖️
+
+                <h3>
+                    Balanced
+                </h3>
+
+                <p>
+                    Standard-Gaming-Profil.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Fortnite Tools</h3>
+            <span>Backend erforderlich</span>
+        </div>
+
+        <div class="row">
+
+            <div>
+                <strong>
+                    Performance Monitor
+                </strong>
+
+                <span>
+                    Android-Systemdaten überwachen
+                </span>
+            </div>
+
+            <button
+                class="btn primary"
+                onclick="refreshAndroidData()">
+
+                Start
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- NETWORK -->
+
+<section class="page" id="network">
+
+    <div class="grid2">
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Netzwerk</h3>
+                <span>Browser</span>
+            </div>
+
+            <div class="value">
+                <span id="ping">
+                    --
+                </span>
+
+                <small>
+                    ms
+                </small>
+            </div>
+
+            <br>
+
+            <button
+                class="btn primary"
+                onclick="testPing()">
+
+                Ping testen
+
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Verbindung</h3>
+                <span>Live</span>
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <strong>
+                        Status
+                    </strong>
+
+                    <span id="online">
+                        --
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <strong>
+                        Verbindungstyp
+                    </strong>
+
+                    <span id="connection">
+                        --
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- BENCHMARK -->
+
+<section class="page" id="benchmark">
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Quick Benchmark</h3>
+            <span id="benchmarkStatus">
+                Bereit
+            </span>
+        </div>
+
+        <div class="value">
+
+            <span id="benchmarkScore">
+                ---
+            </span>
+
+        </div>
+
+        <br>
+
+        <button
+            class="btn primary"
+            onclick="benchmark()">
+
+            Benchmark starten
+
+        </button>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>Activity Log</h3>
+            <span>Live</span>
+        </div>
+
+        <div class="log" id="log"></div>
+
+    </div>
+
+</section>
+
+
+<!-- SYSTEM -->
+
+<section class="page" id="system">
+
+    <div class="grid2">
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Gerät</h3>
+                <span>Android</span>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>
+                        Modell
+                    </strong>
+
+                    <span id="systemDevice">
+                        --
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>
+                        Hersteller
+                    </strong>
+
+                    <span id="manufacturer">
+                        --
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <strong>
+                        Architektur
+                    </strong>
+
+                    <span id="architecture">
+                        --
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="cardHeader">
+                <h3>Hardware</h3>
+                <span>Live</span>
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <strong>
+                        CPU Kerne
+                    </strong>
+
+                    <span id="systemCores">
+                        --
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <strong>
+                        RAM
+                    </strong>
+
+                    <span id="ramTotal">
+                        --
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <strong>
+                        Display
+                    </strong>
+
+                    <span id="systemRefresh">
+                        --
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PROFILES -->
+
+<section class="page" id="profiles">
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>TweakCore Profile</h3>
+            <span>Local</span>
+        </div>
+
+        <button
+            class="btn primary"
+            onclick="saveProfile()">
+
+            Profil speichern
+
+        </button>
+
+        <button
+            class="btn"
+            onclick="loadProfile()">
+
+            Profil laden
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section class="page" id="settings">
+
+    <div class="card">
+
+        <div class="cardHeader">
+            <h3>System auswählen</h3>
+            <span>TweakCore</span>
+        </div>
+
+        <select id="systemSelect">
+
+            <option value="auto">
+                Automatisch erkennen
+            </option>
+
+            <option value="android">
+                Android
+            </option>
+
+            <option value="windows">
+                Windows
+            </option>
+
+            <option value="linux">
+                Linux
+            </option>
+
+            <option value="macos">
+                macOS
+            </option>
+
+        </select>
+
+        <br><br>
+
+        <button
+            class="btn primary"
+            onclick="detectSystem()">
+
+            System erkennen
+
+        </button>
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   STATE
+===================================================== */
+
+const state = {
+
+    system:"unknown",
+
+    fps:0,
+
+    fpsHistory:[],
+
+    backend:false
+
+};
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+const buttons =
+    document.querySelectorAll(".nav button");
+
+const pages =
+    document.querySelectorAll(".page");
+
+buttons.forEach(button => {
+
+    button.addEventListener("click",() => {
+
+        const page =
+            button.dataset.page;
+
+        buttons.forEach(b =>
+            b.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        pages.forEach(p =>
+            p.classList.remove("active")
+        );
+
+        document
+            .getElementById(page)
+            .classList.add("active");
+
+        document
+            .getElementById("pageTitle")
+            .textContent =
+            button.textContent.trim();
+
+        document
+            .getElementById("sidebar")
+            .classList.remove("open");
+
+    });
+
+});
+
+
+document
+    .getElementById("menu")
+    .onclick = () => {
+
+        document
+            .getElementById("sidebar")
+            .classList.toggle("open");
+
+    };
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function toast(text){
+
+    const element =
+        document.getElementById("toast");
+
+    element.textContent =
+        text;
+
+    element.classList.add("show");
+
+    setTimeout(() => {
+
+        element.classList.remove("show");
+
+    },2500);
+
+}
+
+
+/* =====================================================
+   LOG
+===================================================== */
+
+function log(text){
+
+    const log =
+        document.getElementById("log");
+
+    if(!log)
+        return;
+
+    const line =
+        document.createElement("div");
+
+    line.innerHTML =
+        "<b>[" +
+        new Date().toLocaleTimeString() +
+        "]</b> " +
+        text;
+
+    log.prepend(line);
+
+}
+
+
+/* =====================================================
+   SYSTEM DETECTION
+===================================================== */
+
+function detectSystem(){
+
+    const ua =
+        navigator.userAgent.toLowerCase();
+
+    let system =
+        "unknown";
+
+    if(ua.includes("android"))
+        system = "android";
+
+    else if(ua.includes("windows"))
+        system = "windows";
+
+    else if(ua.includes("mac"))
+        system = "macos";
+
+    else if(ua.includes("linux"))
+        system = "linux";
+
+    state.system =
+        system;
+
+    document
+        .getElementById("systemName")
+        .textContent =
+        system.toUpperCase();
+
+    log(
+        "System erkannt: " +
+        system
+    );
+
+    if(system === "android"){
+
+        connectAndroidBackend();
+
+    }
+
+}
+
+
+/* =====================================================
+   ANDROID BACKEND
+===================================================== */
+
+function connectAndroidBackend(){
+
+    if(
+        typeof TweakCore ===
+        "undefined"
+    ){
+
+        setBackend(false);
+
+        log(
+            "Android Backend nicht verbunden."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const data =
+            TweakCore.getSystemInfo();
+
+        JSON.parse(data);
+
+        state.backend =
+            true;
+
+        setBackend(true);
+
+        log(
+            "Android Backend verbunden."
+        );
+
+        refreshAndroidData();
+
+    }
+
+    catch(error){
+
+        setBackend(false);
+
+        log(
+            "Android Backend Fehler."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BACKEND STATUS
+===================================================== */
+
+function setBackend(online){
+
+    const dot =
+        document
+        .getElementById("backendDot");
+
+    const status =
+        document
+        .getElementById("backendStatus");
+
+    if(online){
+
+        dot.classList.add("online");
+
+        status.textContent =
+            "Android Backend online";
+
+    }else{
+
+        dot.classList.remove("online");
+
+        status.textContent =
+            "Android Backend offline";
+
+    }
+
+}
+
+
+/* =====================================================
+   ANDROID DATA
+===================================================== */
+
+function refreshAndroidData(){
+
+    if(
+        typeof TweakCore ===
+        "undefined"
+    ){
+
+        toast(
+            "Android Backend ist nicht verbunden."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const data =
+            JSON.parse(
+                TweakCore.getDashboardData()
+            );
+
+
+        /* DEVICE */
+
+        document
+            .getElementById("device")
+            .textContent =
+            data.system.device;
+
+        document
+            .getElementById("systemDevice")
+            .textContent =
+            data.system.device;
+
+        document
+            .getElementById("manufacturer")
+            .textContent =
+            data.system.manufacturer;
+
+
+        /* ANDROID */
+
+        document
+            .getElementById("androidVersion")
+            .textContent =
+            data.system.android;
+
+
+        /* CPU */
+
+        document
+            .getElementById("cpuCores")
+            .textContent =
+            data.cpu.cores;
+
+        document
+            .getElementById("systemCores")
+            .textContent =
+            data.cpu.cores;
+
+
+        /* RAM */
+
+        const ram =
+            data.memory.usagePercent;
+
+        document
+            .getElementById("ram")
+            .textContent =
+            ram;
+
+        document
+            .getElementById("ramBar")
+            .style.width =
+            ram + "%";
+
+
+        document
+            .getElementById("ramTotal")
+            .textContent =
+            data.system.ramTotal +
+            " MB";
+
+
+        /* BATTERY */
+
+        const battery =
+            data.battery.battery;
+
+        document
+            .getElementById("battery")
+            .textContent =
+            battery;
+
+        document
+            .getElementById("batteryBar")
+            .style.width =
+            battery + "%";
+
+
+        /* TEMPERATURE */
+
+        document
+            .getElementById("temperature")
+            .textContent =
+            data.battery.temperature;
+
+
+        /* DISPLAY */
+
+        const hz =
+            Math.round(
+                data.display.refreshRate
+            );
+
+        document
+            .getElementById("refreshRate")
+            .textContent =
+            hz + " Hz";
+
+        document
+            .getElementById("systemRefresh")
+            .textContent =
+            hz + " Hz";
+
+
+        /* ARCHITECTURE */
+
+        document
+            .getElementById("architecture")
+            .textContent =
+            data.system.architecture;
+
+
+        /* THERMAL */
+
+        document
+            .getElementById("thermal")
+            .textContent =
+            data.thermal;
+
+
+        /* PERFORMANCE */
+
+        document
+            .getElementById("profileStatus")
+            .textContent =
+            data.performance.profile;
+
+
+        state.backend =
+            true;
+
+        setBackend(true);
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        setBackend(false);
+
+    }
+
+}
+
+
+/* =====================================================
+   FPS
+===================================================== */
+
+let last =
+    performance.now();
+
+let frames =
+    0;
+
+function fpsLoop(time){
+
+    frames++;
+
+    if(
+        time - last >= 1000
+    ){
+
+        state.fps =
+            frames;
+
+        frames =
+            0;
+
+        last =
+            time;
+
+        document
+            .getElementById("fps")
+            .textContent =
+            state.fps;
+
+        state.fpsHistory.push(
+            state.fps
+        );
+
+        if(
+            state.fpsHistory.length > 40
+        ){
+
+            state.fpsHistory.shift();
+
+        }
+
+        drawChart();
+
+    }
+
+    requestAnimationFrame(
+        fpsLoop
+    );
+
+}
+
+requestAnimationFrame(
+    fpsLoop
+);
+
+
+/* =====================================================
+   CHART
+===================================================== */
+
+function drawChart(){
+
+    const chart =
+        document.getElementById("chart");
+
+    chart.innerHTML = "";
+
+    state.fpsHistory.forEach(value => {
+
+        const bar =
+            document.createElement("div");
+
+        bar.className =
+            "bar";
+
+        bar.style.height =
+            Math.max(
+                4,
+                Math.min(
+                    100,
+                    value / 2
+                )
+            ) + "%";
+
+        chart.appendChild(bar);
+
+    });
+
+}
+
+
+/* =====================================================
+   PROFILES
+===================================================== */
+
+function setProfile(profile){
+
+    toast(
+        "Profil: " +
+        profile
+    );
+
+    log(
+        "Performance-Profil: " +
+        profile
+    );
+
+}
+
+
+function gamingMode(mode){
+
+    setProfile(mode);
+
+}
+
+
+/* =====================================================
+   PING
+===================================================== */
+
+async function testPing(){
+
+    const start =
+        performance.now();
+
+    try{
+
+        await fetch(
+            "https://www.cloudflare.com/cdn-cgi/trace",
+            {
+                mode:"no-cors",
+                cache:"no-store"
+            }
+        );
+
+        const ping =
+            Math.round(
+                performance.now() -
+                start
+            );
+
+        document
+            .getElementById("ping")
+            .textContent =
+            ping;
+
+        log(
+            "Ping: " +
+            ping +
+            " ms"
+        );
+
+    }
+
+    catch(error){
+
+        toast(
+            "Ping konnte nicht getestet werden."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BENCHMARK
+===================================================== */
+
+function benchmark(){
+
+    const status =
+        document
+        .getElementById("benchmarkStatus");
+
+    const score =
+        document
+        .getElementById("benchmarkScore");
+
+    status.textContent =
+        "Läuft...";
+
+    log(
+        "Benchmark gestartet."
+    );
+
+    setTimeout(() => {
+
+        const start =
+            performance.now();
+
+        let result =
+            0;
+
+        for(
+            let i=0;
+            i<3000000;
+            i++
+        ){
+
+            result +=
+                Math.sqrt(i) *
+                Math.sin(i);
+
+        }
+
+        const time =
+            performance.now() -
+            start;
+
+        const value =
+            Math.max(
+                1,
+                Math.round(
+                    100000 / time
+                )
+            );
+
+        score.textContent =
+            value;
+
+        status.textContent =
+            "Fertig";
+
+        log(
+            "Benchmark: " +
+            value
+        );
+
+        toast(
+            "Benchmark abgeschlossen."
+        );
+
+    },100);
+
+}
+
+
+/* =====================================================
+   PROFILE STORAGE
+===================================================== */
+
+function saveProfile(){
+
+    localStorage.setItem(
+        "tweakcore_profile",
+        "balanced"
+    );
+
+    toast(
+        "Profil gespeichert."
+    );
+
+}
+
+
+function loadProfile(){
+
+    const profile =
+        localStorage.getItem(
+            "tweakcore_profile"
+        );
+
+    toast(
+        profile
+        ? "Profil geladen: " + profile
+        : "Kein Profil gespeichert."
+    );
+
+}
+
+
+/* =====================================================
+   ONLINE STATUS
+===================================================== */
+
+function updateNetwork(){
+
+    document
+        .getElementById("online")
+        .textContent =
+        navigator.onLine
+        ? "Online"
+        : "Offline";
+
+    if(
+        navigator.connection
+    ){
+
+        document
+            .getElementById("connection")
+            .textContent =
+            navigator.connection.effectiveType ||
+            "Unbekannt";
+
+    }
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+detectSystem();
+
+updateNetwork();
+
+window.addEventListener(
+    "online",
+    updateNetwork
+);
+
+window.addEventListener(
+    "offline",
+    updateNetwork
+);
+
+setInterval(
+    refreshAndroidData,
+    1000
+);
+
+log(
+    "TweakCore gestartet."
+);
+
+log(
+    "Safe Mode aktiv."
+);
+
+</script>
+
+</body>
+</html>
